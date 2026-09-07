@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Semáforo del Conocimiento</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    min-height:100vh;
+    background:
+        radial-gradient(circle at top left,#38bdf8 0%,transparent 35%),
+        radial-gradient(circle at bottom right,#6366f1 0%,transparent 35%),
+        linear-gradient(135deg,#0f172a,#164e63);
+    color:#172033;
+}
+
+.app{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:25px 15px;
+}
+
+.card{
+    width:100%;
+    max-width:900px;
+    background:rgba(255,255,255,.97);
+    border-radius:30px;
+    overflow:hidden;
+    box-shadow:0 25px 70px rgba(0,0,0,.35);
+}
+
+.header{
+    background:linear-gradient(135deg,#0284c7,#2563eb);
+    color:white;
+    padding:35px 25px;
+    text-align:center;
+}
+
+.science-icon{
+    font-size:55px;
+    margin-bottom:10px;
+}
+
+.header h1{
+    font-size:34px;
+    margin-bottom:8px;
+}
+
+.header p{
+    font-size:18px;
+    opacity:.95;
+}
+
+.content{
+    padding:35px;
+}
+
+.screen{
+    display:none;
+}
+
+.screen.active{
+    display:block;
+    animation:entrada .5s ease;
+}
+
+@keyframes entrada{
+    from{
+        opacity:0;
+        transform:translateY(20px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+/* INICIO */
+
+.welcome{
+    text-align:center;
+}
+
+.welcome h2{
+    font-size:28px;
+    margin-bottom:15px;
+}
+
+.welcome-text{
+    color:#64748b;
+    font-size:17px;
+    line-height:1.6;
+    max-width:650px;
+    margin:0 auto 25px;
+}
+
+.mission-box{
+    background:#f0f9ff;
+    border:2px solid #bae6fd;
+    border-radius:20px;
+    padding:20px;
+    margin-bottom:25px;
+}
+
+.mission-box strong{
+    color:#0369a1;
+}
+
+.name-label{
+    display:block;
+    text-align:left;
+    font-weight:bold;
+    margin-bottom:8px;
+}
+
+.name-input{
+    width:100%;
+    padding:16px;
+    border:2px solid #cbd5e1;
+    border-radius:14px;
+    font-size:17px;
+    outline:none;
+    margin-bottom:15px;
+}
+
+.name-input:focus{
+    border-color:#0284c7;
+}
+
+/* BOTONES */
+
+.btn{
+    border:none;
+    padding:15px 28px;
+    border-radius:14px;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:.25s;
+}
+
+.btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 8px 20px rgba(0,0,0,.18);
+}
+
+.btn-primary{
+    background:linear-gradient(135deg,#0284c7,#2563eb);
+    color:white;
+}
+
+.btn-secondary{
+    background:#e2e8f0;
+    color:#334155;
+}
+
+/* QUIZ */
+
+.quiz-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:15px;
+    gap:15px;
+}
+
+.question-number{
+    color:#0284c7;
+    font-weight:bold;
+}
+
+.timer{
+    background:#f1f5f9;
+    padding:8px 14px;
+    border-radius:20px;
+    font-weight:bold;
+}
+
+.progress-container{
+    height:10px;
+    background:#e2e8f0;
+    border-radius:20px;
+    overflow:hidden;
+    margin-bottom:30px;
+}
+
+.progress{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,#06b6d4,#2563eb);
+    transition:.4s;
+}
+
+.question{
+    font-size:24px;
+    font-weight:bold;
+    line-height:1.4;
+    margin-bottom:25px;
+}
+
+.option{
+    width:100%;
+    padding:17px;
+    margin:12px 0;
+    border:2px solid #cbd5e1;
+    background:#f8fafc;
+    border-radius:15px;
+    text-align:left;
+    font-size:16px;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.option:hover{
+    border-color:#0284c7;
+    background:#f0f9ff;
+}
+
+.option.correct{
+    background:#dcfce7;
+    border-color:#16a34a;
+    color:#166534;
+}
+
+.option.incorrect{
+    background:#fee2e2;
+    border-color:#dc2626;
+    color:#991b1b;
+}
+
+.option.disabled{
+    cursor:default;
+}
+
+.feedback{
+    display:none;
+    padding:18px;
+    border-radius:15px;
+    margin-top:20px;
+    line-height:1.5;
+}
+
+.feedback.show{
+    display:block;
+}
+
+.feedback.correct-feedback{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.feedback.incorrect-feedback{
+    background:#fff7ed;
+    color:#9a3412;
+}
+
+.next-container{
+    text-align:right;
+    margin-top:20px;
+}
+
+/* RESULTADO */
+
+.result{
+    text-align:center;
+}
+
+.result h2{
+    font-size:30px;
+    margin-bottom:8px;
+}
+
+.student-result{
+    color:#64748b;
+    margin-bottom:10px;
+}
+
+.score{
+    font-size:58px;
+    font-weight:bold;
+    color:#0284c7;
+    margin:10px 0;
+}
+
+/* SEMAFORO */
+
+.traffic-light{
+    width:170px;
+    background:#111827;
+    border-radius:35px;
+    padding:20px;
+    margin:20px auto;
+    box-shadow:0 15px 30px rgba(0,0,0,.25);
+}
+
+.light{
+    width:85px;
+    height:85px;
+    border-radius:50%;
+    margin:12px auto;
+    opacity:.15;
+    transition:.5s;
+}
+
+.light.active{
+    opacity:1;
+    transform:scale(1.12);
+}
+
+.red{
+    background:#ef4444;
+}
+
+.yellow{
+    background:#facc15;
+}
+
+.green{
+    background:#22c55e;
+}
+
+.result-title{
+    font-size:25px;
+    font-weight:bold;
+    margin:15px 0;
+}
+
+.result-description{
+    color:#475569;
+    line-height:1.6;
+    max-width:650px;
+    margin:auto;
+}
+
+.tip{
+    background:#f1f5f9;
+    border-radius:18px;
+    padding:20px;
+    margin:25px auto;
+    max-width:700px;
+    line-height:1.6;
+}
+
+.tip strong{
+    display:block;
+    margin-bottom:5px;
+}
+
+/* ESTADISTICA */
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+    margin:25px 0;
+}
+
+.stat{
+    padding:18px;
+    border-radius:15px;
+    font-weight:bold;
+}
+
+.stat-green{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.stat-yellow{
+    background:#fef9c3;
+    color:#854d0e;
+}
+
+.stat-red{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+/* FOOTER */
+
+.footer{
+    text-align:center;
+    color:#94a3b8;
+    font-size:13px;
+    padding-top:20px;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:600px){
+
+    .app{
+        padding:10px;
+    }
+
+    .card{
+        border-radius:20px;
+    }
+
+    .header{
+        padding:25px 15px;
+    }
+
+    .header h1{
+        font-size:26px;
+    }
+
+    .science-icon{
+        font-size:42px;
+    }
+
+    .content{
+        padding:22px;
+    }
+
+    .question{
+        font-size:20px;
+    }
+
+    .quiz-top{
+        flex-direction:column;
+        align-items:flex-start;
+    }
+
+    .stats{
+        grid-template-columns:1fr;
+    }
+
+    .btn{
+        width:100%;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<div class="card">
+
+<!-- ================= HEADER ================= -->
+
+<div class="header">
+
+<div class="science-icon">🔬🧬🌱</div>
+
+<h1>Semáforo del Conocimiento</h1>
+
+<p>Materia orgánica y niveles de organización</p>
+
+</div>
+
+
+<div class="content">
+
+
+<!-- ================= INICIO ================= -->
+
+<section id="startScreen" class="screen active">
+
+<div class="welcome">
+
+<h2>🚀 ¡Prepárate para el reto!</h2>
+
+<p class="welcome-text">
+
+Vamos a comprobar cuánto comprendiste sobre
+<strong>materia orgánica y niveles de organización biológica</strong>.
+
+Responde 5 preguntas. No tengas miedo de equivocarte:
+esta actividad nos ayudará a descubrir qué necesitamos reforzar.
+
+</p>
+
+
+<div class="mission-box">
+
+<strong>🎯 MISIÓN</strong>
+
+<p>
+Responde las 5 preguntas y descubre tu nivel
+de comprensión mediante el semáforo.
+</p>
+
+</div>
+
+
+<label class="name-label">
+👤 Escribe tu nombre y apellido
+</label>
+
+<input
+    id="studentName"
+    class="name-input"
+    type="text"
+    placeholder="Ejemplo: María López"
+>
+
+
+<button type="button"
+    class="btn btn-primary"
+    onclick="startQuiz()">
+
+🚀 COMENZAR RETO
+
+</button>
+
+</div>
+
+</section>
+
+
+<!-- ================= QUIZ ================= -->
+
+<section id="quizScreen" class="screen">
+
+<div class="quiz-top">
+
+<div id="questionNumber" class="question-number">
+Pregunta 1 de 5
+</div>
+
+<div id="timer" class="timer">
+⏱️ 03:00
+</div>
+
+</div>
+
+
+<div class="progress-container">
+
+<div id="progressBar" class="progress"></div>
+
+</div>
+
+
+<div id="questionText" class="question"></div>
+
+<div id="options"></div>
+
+<div id="feedback" class="feedback"></div>
+
+
+<div class="next-container">
+
+<button type="button"
+    id="nextButton"
+    class="btn btn-primary"
+    onclick="nextQuestion()"
+    style="display:none">
+
+SIGUIENTE ➜
+
+</button>
+
+</div>
+
+</section>
+
+
+<!-- ================= RESULTADO ================= -->
+
+<section id="resultScreen" class="screen result">
+
+<h2>🏆 ¡Reto completado!</h2>
+
+<p id="studentResult" class="student-result"></p>
+
+<div id="score" class="score">
+0 / 5
+</div>
+
+
+<div class="traffic-light">
+
+<div id="redLight" class="light red"></div>
+
+<div id="yellowLight" class="light yellow"></div>
+
+<div id="greenLight" class="light green"></div>
+
+</div>
+
+
+<div id="resultTitle" class="result-title"></div>
+
+<p id="resultDescription" class="result-description"></p>
+
+
+<div class="stats">
+
+<div class="stat stat-green">
+🟢 4–5<br>
+Comprendí
+</div>
+
+<div class="stat stat-yellow">
+🟡 2–3<br>
+Tengo dudas
+</div>
+
+<div class="stat stat-red">
+🔴 0–1<br>
+Necesito ayuda
+</div>
+
+</div>
+
+
+<div id="tip" class="tip"></div>
+
+
+<button type="button"
+    class="btn btn-primary"
+    onclick="restartQuiz()">
+
+🔄 INTENTAR NUEVAMENTE
+
+</button>
+
+
+<div class="footer">
+
+🔬 Ciencias Naturales · Actividad de participación
+
+</div>
+
+</section>
+
+
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* ==========================================
+   PREGUNTAS
+========================================== */
+
+const questions = [
+
+{
+question:
+"¿Qué caracteriza principalmente a la materia orgánica?",
+
+options:[
+
+"Está formada exclusivamente por minerales.",
+
+"Contiene principalmente carbono y forma parte de los seres vivos.",
+
+"Solo se encuentra en las rocas.",
+
+"No puede formar moléculas."
+
+],
+
+answer:1,
+
+feedback:
+"La materia orgánica está relacionada principalmente con compuestos que contienen carbono y que forman parte de los seres vivos."
+},
+
+
+{
+question:
+"¿Cuál de los siguientes ejemplos corresponde a materia orgánica?",
+
+options:[
+
+"Agua.",
+
+"Sal mineral.",
+
+"Madera.",
+
+"Oxígeno."
+
+],
+
+answer:2,
+
+feedback:
+"La madera proviene de un ser vivo y contiene numerosos compuestos orgánicos."
+},
+
+
+{
+question:
+"¿Cuál es el orden correcto de los niveles de organización biológica, de menor a mayor?",
+
+options:[
+
+"Órgano → tejido → célula → organismo.",
+
+"Célula → tejido → órgano → sistema → organismo.",
+
+"Organismo → sistema → órgano → tejido.",
+
+"Tejido → célula → organismo → órgano."
+
+],
+
+answer:1,
+
+feedback:
+"La organización biológica comienza con la célula y aumenta en complejidad formando tejidos, órganos, sistemas y organismos."
+},
+
+
+{
+question:
+"¿Qué nivel de organización está formado por un conjunto de células similares que cumplen una función determinada?",
+
+options:[
+
+"Órgano.",
+
+"Tejido.",
+
+"Sistema.",
+
+"Organismo."
+
+],
+
+answer:1,
+
+feedback:
+"Un tejido está formado por células similares que trabajan juntas para cumplir una función específica."
+},
+
+
+{
+question:
+"¿Cuál es la relación entre la materia orgánica y los niveles de organización?",
+
+options:[
+
+"No existe ninguna relación.",
+
+"La materia orgánica solamente forma órganos.",
+
+"Las moléculas orgánicas forman parte de las células y contribuyen a la estructura de los seres vivos.",
+
+"Los niveles de organización están formados únicamente por materia inorgánica."
+
+],
+
+answer:2,
+
+feedback:
+"Las moléculas orgánicas forman parte de las células y contribuyen a construir las estructuras de los seres vivos."
+}
+
+];
+
+
+/* ==========================================
+   VARIABLES
+========================================== */
+
+let currentQuestion = 0;
+
+let score = 0;
+
+let studentName = "";
+
+let answered = false;
+
+let timerInterval;
+
+let timeLeft = 180;
+
+
+/* ==========================================
+   INICIAR
+========================================== */
+
+function startQuiz(){
+
+studentName =
+document.getElementById("studentName").value.trim();
+
+
+if(studentName === ""){
+
+alert("👤 Por favor, escribe tu nombre para comenzar.");
+
+return;
+
+}
+
+
+document.getElementById("startScreen")
+.classList.remove("active");
+
+document.getElementById("quizScreen")
+.classList.add("active");
+
+
+currentQuestion = 0;
+
+score = 0;
+
+timeLeft = 180;
+
+startTimer();
+
+showQuestion();
+
+}
+
+
+/* ==========================================
+   TEMPORIZADOR
+========================================== */
+
+function startTimer(){
+
+clearInterval(timerInterval);
+
+timerInterval =
+setInterval(function(){
+
+timeLeft--;
+
+updateTimer();
+
+if(timeLeft <= 0){
+
+clearInterval(timerInterval);
+
+finishQuiz();
+
+}
+
+},1000);
+
+}
+
+
+function updateTimer(){
+
+let minutes =
+Math.floor(timeLeft / 60);
+
+let seconds =
+timeLeft % 60;
+
+seconds =
+seconds < 10
+? "0" + seconds
+: seconds;
+
+document.getElementById("timer")
+.textContent =
+"⏱️ " + minutes + ":" + seconds;
+
+}
+
+
+/* ==========================================
+   MOSTRAR PREGUNTA
+========================================== */
+
+function showQuestion(){
+
+answered = false;
+
+const q =
+questions[currentQuestion];
+
+
+document.getElementById("questionNumber")
+.textContent =
+"Pregunta " +
+(currentQuestion + 1) +
+" de " +
+questions.length;
+
+
+document.getElementById("questionText")
+.textContent =
+q.question;
+
+
+document.getElementById("progressBar")
+.style.width =
+((currentQuestion) /
+questions.length * 100) + "%";
+
+
+const options =
+document.getElementById("options");
+
+options.innerHTML = "";
+
+
+q.options.forEach(function(option,index){
+
+const button =
+document.createElement("button");
+
+button.className = "option";
+
+button.innerHTML =
+"<strong>" +
+String.fromCharCode(65 + index) +
+".</strong> " +
+option;
+
+button.onclick =
+function(){
+
+selectAnswer(index,button);
+
+};
+
+options.appendChild(button);
+
+});
+
+
+const feedback =
+document.getElementById("feedback");
+
+feedback.className =
+"feedback";
+
+feedback.innerHTML = "";
+
+
+document.getElementById("nextButton")
+.style.display = "none";
+
+}
+
+
+/* ==========================================
+   RESPUESTA
+========================================== */
+
+function selectAnswer(index,selected){
+
+if(answered) return;
+
+answered = true;
+
+const q =
+questions[currentQuestion];
+
+const options =
+document.querySelectorAll(".option");
+
+
+options.forEach(function(option,i){
+
+option.classList.add("disabled");
+
+if(i === q.answer){
+
+option.classList.add("correct");
+
+}
+
+});
+
+
+if(index === q.answer){
+
+score++;
+
+showFeedback(
+
+"✅ ¡Respuesta correcta!",
+
+q.feedback,
+
+true
+
+);
+
+}else{
+
+selected.classList.add("incorrect");
+
+showFeedback(
+
+"❌ Revisa este concepto",
+
+q.feedback,
+
+false
+
+);
+
+}
+
+
+document.getElementById("nextButton")
+.style.display = "inline-block";
+
+}
+
+
+/* ==========================================
+   RETROALIMENTACIÓN
+========================================== */
+
+function showFeedback(title,text,correct){
+
+const feedback =
+document.getElementById("feedback");
+
+feedback.innerHTML =
+"<strong>" +
+title +
+"</strong><br>" +
+text;
+
+feedback.classList.add("show");
+
+if(correct){
+
+feedback.classList.add("correct-feedback");
+
+}else{
+
+feedback.classList.add("incorrect-feedback");
+
+}
+
+}
+
+
+/* ==========================================
+   SIGUIENTE
+========================================== */
+
+function nextQuestion(){
+
+currentQuestion++;
+
+if(currentQuestion >= questions.length){
+
+finishQuiz();
+
+}else{
+
+showQuestion();
+
+}
+
+}
+
+
+/* ==========================================
+   FINALIZAR
+========================================== */
+
+function finishQuiz(){
+
+clearInterval(timerInterval);
+
+document.getElementById("quizScreen")
+.classList.remove("active");
+
+document.getElementById("resultScreen")
+.classList.add("active");
+
+
+document.getElementById("studentResult")
+.textContent =
+"👤 " + studentName;
+
+
+document.getElementById("score")
+.textContent =
+score + " / " + questions.length;
+
+
+const red =
+document.getElementById("redLight");
+
+const yellow =
+document.getElementById("yellowLight");
+
+const green =
+document.getElementById("greenLight");
+
+
+red.classList.remove("active");
+
+yellow.classList.remove("active");
+
+green.classList.remove("active");
+
+
+const title =
+document.getElementById("resultTitle");
+
+const description =
+document.getElementById("resultDescription");
+
+const tip =
+document.getElementById("tip");
+
+
+if(score >= 4){
+
+green.classList.add("active");
+
+
+title.innerHTML =
+"🟢 ¡EXCELENTE!";
+
+description.innerHTML =
+"Comprendiste muy bien los conceptos de materia orgánica y niveles de organización.";
+
+
+tip.innerHTML =
+"<strong>🌟 Tu siguiente desafío:</strong>" +
+"Intenta explicar a un compañero cómo se relacionan " +
+"las células, los tejidos, los órganos y los sistemas.";
+
+}
+
+
+else if(score >= 2){
+
+yellow.classList.add("active");
+
+
+title.innerHTML =
+"🟡 ¡VAS POR BUEN CAMINO!";
+
+description.innerHTML =
+"Comprendiste varios conceptos, pero todavía existen algunas ideas que debemos reforzar.";
+
+
+tip.innerHTML =
+"<strong>💡 Recomendación:</strong>" +
+"Repasa la diferencia entre célula, tejido, órgano y sistema, " +
+"y recuerda la importancia del carbono en la materia orgánica.";
+
+}
+
+
+else{
+
+red.classList.add("active");
+
+
+title.innerHTML =
+"🔴 ¡NECESITAMOS REFORZAR!";
+
+description.innerHTML =
+"No te preocupes. Este resultado nos ayuda a identificar qué conceptos debemos revisar juntos.";
+
+
+tip.innerHTML =
+"<strong>👨‍🏫 Misión de recuperación:</strong>" +
+"Revisa los conceptos principales y vuelve a realizar el reto. " +
+"¡Cada intento es una oportunidad para aprender!";
+
+}
+
+}
+
+
+/* ==========================================
+   REINICIAR
+========================================== */
+
+function restartQuiz(){
+
+clearInterval(timerInterval);
+
+currentQuestion = 0;
+
+score = 0;
+
+answered = false;
+
+document.getElementById("resultScreen")
+.classList.remove("active");
+
+document.getElementById("startScreen")
+.classList.add("active");
+
+document.getElementById("studentName")
+.value = "";
+
+document.getElementById("progressBar")
+.style.width = "0%";
+
+}
+
+window.addEventListener("error", function(e) {
+        console.error("Error en la actividad:", e.error || e.message);
+    });
+</script>
+
+<noscript>
+        <div style="position:fixed;inset:0;background:white;display:flex;align-items:center;justify-content:center;padding:30px;text-align:center;font-family:Arial,sans-serif;z-index:9999;">
+            <div>
+                <h2>Esta actividad necesita JavaScript</h2>
+                <p>Activa JavaScript en tu navegador para realizar el reto.</p>
+            </div>
+        </div>
+    </noscript>
+</body>
+</html>
